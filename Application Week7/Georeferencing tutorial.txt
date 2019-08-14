@@ -1,0 +1,64 @@
+This instruction shows you how to digitize an image or a scanned map using the Georeferencing tool in ArcMap. This will allow us to turn its physical contents into digital features that we can then apply spatial techniques to. This procedure essentially involves two things: first, we need to “locate” the image in the world—--we need to give it its proper coordinates; second, we need to “correct” any distortions that might have taken place in the creation of this image or during scanning—--we need to warp, or rubber sheet, the image to fit a reference (and supposedly correct) map. Metaphorically, we will pin our image to another map, and then warp, stretch, and distort the image according to the pins we put on it. We will be using the example image of D.C.’s National Mall. 
+
+1. Load the shapefile DCclipped—-it’s a street map of the National Mall with accurate coordinate information and this will be our referencing map. Then load the national_mall.jpg. (If a dialogue pops up about pyramids, say No.) A dialog shows up saying “Unknown Spatial Reference” and click OK. This is simply ArcMap telling you that the image doesn’t have geocoordinate information so Arc doesn’t know where to put it. By default, it puts it somewhere far from the DC street map we have. You can zoom to layer to see it. 
+	
+	1.1 Open the image layer’s property and go to Source tab. The Extent tells you where Arc puts it. You should also note that the layer doesn’t have spatial reference.  
+
+
+2. Change the coordinate system in Data Frame Properties into WGS 1984 Web Mercator. This step is extremely important (more on this later) and you should see that street layer expands a little bit. 
+
+
+
+3. Load the “Georeferencing” toolbar. You can do this in two ways: 1, Customize—->Toolbars or 2) right click on the toolbar and then check the “Georeferencing” tool. 
+
+
+
+4. In this toolbar, click on the “Georeferencing” tool, in the dropdown list, click “Fit to Display.” After this, Arc should display the image in the ballpark of the street layer. (sometimes it fails to do this; no big deal if it doesn’t render—-after we add control points (see below) the two will come together any way).
+		
+	4.1. To make the following process easier, I usually fiddle with the display a bit—-I make the image 50% transparent and narrow the line in the street layer just to make the view less busy. 
+
+
+
+5. Now we will add control points—-the corresponding locations on the image and the street map. In other words, these are the anchors that we use to pin our image on the map. To the right of the Georeferencing tool, click on the function “Add Control Points” (a small icon with two crosses and an arrow in between). Your mouse turns into a cross. 
+
+
+
+6. Unselect the street layer. In the image layer, find buildings or street corners that are easy to identify. I choose the bottom tip of the Eclipse (south of White house). Move your mouse there and click. You should see a green cross and a number popping up, and also a line following your mouse. 
+
+	6.1 If your image layer and street layer do not come close after “Fit to Display,” you would have to “zoom to layer” to navigate between layers. 
+
+
+7. Select the street layer and unselect the image layer. Find the corresponding location on the street layer and click on it (a stead hand helps). A red cross and number pops up that overlaps with the green ones. You just added the first control point (the first pushpin). If you turn back on your image layer, you should see that the two layers are lined up perfectly at this particular location. 
+
+
+
+8. But not so much for other parts of the map. This can be achieved by repeating this exercise on other locations. Do this for capitol building, Lincoln Memorial etc.  
+
+	8.1 It’s important that the first click in a pair should always be on the image layer and then on the street layer. The flicking on and off of layers is just to help you avoid being confused by multiple layers and is not necessary if you are not confused. Most of the time we need to see both maps to determine which locations to use. 
+
+
+
+9. As we add more points, one thing you will notice is that the colored crosses and numbers no long overlap perfectly. This is because Arc is calculating the best way to fit the map based on the links we have chosen. One way to think about this is that three points are all that are needed to define a perfect plane. A fourth point’s location is mathematically inferred. But we are now telling Arc the location of a fourth, fifth, and sixth point and so on and these locations can conflict with the locations calculated by Arc. So Arc is trying to minimize the distances between the inferred locations and observed ones. 
+
+	9.1 To see Arc’s calculation, click open “View Link Table” (a table icon in the Georeferencing toolbar). The links / control points / anchors are listed in the table and IDed. You can select and delete the links. You can also save this table as an excel and load them next time (this might be helpful if you have a lot of links). 
+	9.2 At the top right of the box is the Total RMS Error—-this is analogous to the R square in econometrics. We can lower this value only by adding or deleting links and by drawing more accurate links. Note that adding links will not necessarily lower this value. And per my experience, for most projects, 4-6 links are sufficient. 
+	9.3 If any link has too high a residual compared to others, you can redraw that link and delete the original one to see if this lowers the Total Error. Sometimes it doesn’t. In principle, the smaller this value, the more accurate is your work. For this particular example, I was only able to obtain a value around 10. 
+	9.4 Spread out your links as much as possible—-closely placed links do not add much information. 
+	9.5 At the bottom of the box is a dropdown menu of different transformation methods. As you add more points, more sophisticated options will become available but for our purpose the 1st order polynomial should suffice.
+
+
+
+10. After you are satisfied with the degree of overlap, save your work by clicking on the Georeferencing dropdown. You can either Update Georeferencing—-which will alter the original image file—-or Rectify—-which will create new raster file in the default geodatabase but leave the image file in your folder untouched. (Arc might say it fails to rectify and that’s most likely due to the computer setting has left the default geodatabase directory “Read Only” which you can change) 
+
+	10.1 Once you update, remove the image layer and reload it. You should see that it aligns correctly with the street layer. 
+	10.2 Check the properties of the new image layer, in the Source tab, you should see that it now has new geographic information and a spatial reference that is the same as the street layer. 
+
+
+
+A few more words on step 2. The coordinate system in the Data Frame determines how the street layer is represented / projected in Arc. If this does not align with the projection system used by the image map, the error value of your effort is likely to blow up. To see this, try the above steps on the national mall tilted. jpg. You will see that no matter how hard you try to accurately pin point everything, you just cannot achieve the same level of alignment. 
+
+It is therefore crucial for you to identify the projection method used in the image or map that you want to digitize. For well constructed maps, this information is usually specified along with the its legends. But for many old maps or images online this information is nowhere to be found. Although some projection systems can nevertheless be guessed but this requires you to be familiar with them. It is thus helpful to research into the history of surveying and mapping in the period in which your map was created. Another useful tip is that online mapping services such as Google Map usually use Web Mercator projections. 
+
+Similarly, how accurately the old map was drawn will also affect the precision of your digitization. 
+
+Lastly, mapwarper.net offers a platform for the exact same purpose of this instruction, but using a different software. It is a useful website to check out to see how other people are doing it.
